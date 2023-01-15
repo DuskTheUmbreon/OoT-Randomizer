@@ -447,7 +447,7 @@
     {
         "region_name": "GV Upper Stream",
         "scene": "Gerudo Valley",
-        "hint": "GERUDO_VALLEY,
+        "hint": "GERUDO_VALLEY",
         "time_passes": true,
         "locations": {
             "GV Waterfall Freestanding PoH": "True",
@@ -609,17 +609,38 @@
             "Haunted Wasteland": "True"
         }
     },
+    # A collection delay hookshot jump can provide access to the arch, but
+    # collection delay is never in logic due to unrepeatability
     {
         "region_name": "Desert Colossus",
         "scene": "Desert Colossus",
         "hint": "DESERT_COLOSSUS",
         "time_passes": true,
+        "events": {
+            # Used in Spirit logic, checks that adult can return to the hands
+            # after either age reaches them once from here
+            "Adult Spirit Hover Is Repeatable": "
+                is_adult and can_shield and
+                    (bombchus_are_repeatable or (Hover_Boots and Bombs and Hookshot) or
+                    (here(can_plant_bean) and Hookshot and
+                        ((Hover_Boots and Megaton_Hammer) or
+                        (glitch_qpa and Bombs))))"
+        },
         "locations": {
+            # Start hovering from near the top of the animated slope.
+            # Any method from the hands is possible from either hand except a hammer hoverboost
+            # requires shield from Silver Gauntlets, and a damage hoverboost takes fall damage from
+            # Silver Gauntlets. Redundant possibilities are omitted.
             "Colossus Freestanding PoH": "
                 (is_adult and here(can_plant_bean)) or
-                at('Mirror Shield Hand', (can_mega or (can_bomb_slide and can_use(Hover_Boots)))) or
-                at('Silver Gauntlets Hand', (can_mega or (can_bomb_slide and can_use(Hover_Boots)))) or
-                (can_hover and (can_use(Hover_Boots) or can_qpa or glitch_insane))",
+                at('Spirit Temple Adult Central Chamber Known',
+                    (Small_Key_Spirit_Temple, 4) and has_explosives and
+                    (can_mega or (can_use(Hover_Boots) and
+                    (can_bomb_slide or (Megaton_Hammer and can_shield) or (has_explosives and can_live_dmg(1.0)))))) or
+                at('Mirror Shield Hand Known',
+                    can_use(Hover_Boots) and (can_bomb_slide or Megaton_Hammer or (has_explosives and can_live_dmg(0.5)))) or
+                at('Silver Gauntlets Hand Known', can_mega) or
+                (can_hover and glitch_insane)",
             "Colossus GS Bean Patch": "can_plant_bugs and can_child_attack",
             "Colossus GS Tree": "is_adult and (can_use(Hookshot) or can_hover or can_use(Boomerang)) and at_night",
             "Colossus GS Hill": "is_adult and at_night",
@@ -634,16 +655,22 @@
             "Spirit Temple Lobby": "True",
             # This weirdclip is hard because sand is sand and leevers are a mistake.
             "Colossus Grotto": "can_use(Silver_Gauntlets) or (can_weirdclip and glitch_insane) or (can_ledge_cancel and is_child)",
-            # Reaching either hand from here reasonably requires coming from arch or hooking silvers chest and crossing from silvers to mirror. It's a *very* long hover otherwise.
-            # Need to use a special form of QPA here so that one-time bottles aren't in logic
-            "Silver Gauntlets Hand": "can_hover and (can_use(Hover_Boots) or
-                (glitch_qpa and can_use(Sticks) and (has_adult_trade_item and (is_adult or (glitch_equipswap and Dins_Fire))) or
-                    (has_adult_trade_item and (is_adult or (glitch_equipswap and Dins_Fire))))) and
-                (can_use(Hookshot) or (here(can_plant_bean) and is_adult) or (glitch_insane and has_bombchus))",
-            "Mirror Shield Hand": "can_hover and (can_use(Hover_Boots) or
-                (glitch_qpa and can_use(Sticks) and (has_adult_trade_item and (is_adult or (glitch_equipswap and Dins_Fire))) or
-                    (has_adult_trade_item and (is_adult or (glitch_equipswap and Dins_Fire))))) and
-                (here(can_plant_bean and is_adult) or (glitch_insane and has_bombchus))"
+            # Reaching either hand from here reasonably requires coming from arch or hooking silvers chest and crossing
+            # from silvers to mirror. It's a *very* long hover otherwise. Logic for hovering to silvers from here
+            # without hookshot would be redundant with hovering to mirror and then to silvers, so it isn't included.
+
+            # The explosive hoverboost (glitchless Spirit hover) isn't in logic due to the difficulty and the lack of a
+            # setup from the Wasteland entrance and for a slight simplification to Spirit logic (access to either hand
+            # from Colossus is equivalent). A plain hoverboots forward sidehop jumpslash is also possible, which is
+            # even harder, and AFAIK there is no documented setup.
+            "Silver Gauntlets Hand Known": "glitch_spirit_hands and can_use(Hookshot) and
+                ((can_hover and (Hover_Boots or (glitch_qpa and Bombs and has_bombchus))) or
+                (here(can_plant_bean) and can_shield and Hover_Boots and ((can_bomb_slide and Bombs) or Megaton_Hammer)))",
+            # Hovering from the arch is possible with 11 bombchu hovers or 11 QPA contortion hovers
+            # or 11 kokiri bomb hovers
+            "Mirror Shield Hand Known": "glitch_spirit_hands and can_hover and ((here(can_plant_bean) and is_adult and
+                (has_bombchus or (glitch_qpa and has_first_person_item) or Hover_Boots or glitch_insane)) or
+                (glitch_insane and has_bombchus))"
         }
     },
     {

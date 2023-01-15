@@ -63,8 +63,8 @@
     "can_use_projectile": "has_explosives or (is_adult and (Bow or Hookshot or (Boomerang and can_equipswap))) or (is_child and (Slingshot or Boomerang))",
     "has_projectile(for_age)": "has_explosives
             or (for_age == child and (Slingshot or Boomerang))
-            or (for_age == adult and (Bow or Hookshot or (Boomerang and can_equipswap)))
-            or (for_age == both and (Slingshot or Boomerang) and (Bow or Hookshot or (Boomerang and can_equipswap)))
+            or (for_age == adult and (Bow or Hookshot or (Boomerang and adult_can_equipswap)))
+            or (for_age == both and (Slingshot or Boomerang) and (Bow or Hookshot or (Boomerang and adult_can_equipswap)))
             or (for_age == either and (Slingshot or Boomerang or Bow or Hookshot))",
     "can_bonk_tree": "deadly_bonks == False or Fairy or can_use(Nayrus_Love)",
     "can_bonk_crate": "deadly_bonks == False or Fairy or can_use(Nayrus_Love) or can_blast_or_smash",
@@ -77,8 +77,8 @@
             or (_is_adult_item(item) and is_adult and item)
             or (_is_magic_arrow(item) and is_adult and item and Bow and Magic_Meter)
             or (_is_child_item(item) and is_child and item)
-            or (_is_equipswap_item(item) and can_equipswap)
-            or (_is_equipswap_slingshot(item) and can_use(Bow) and can_equipswap)",
+            or (_is_equipswap_item(item) and can_equipswap and item)
+            or (_is_equipswap_slingshot(item) and can_use(Bow) and can_equipswap and item)",
     "_is_magic_item(item)": "item == Dins_Fire or item == Farores_Wind or item == Nayrus_Love or item == Lens_of_Truth",
     "_is_adult_item(item)": "item == Bow or item == Megaton_Hammer or item == Iron_Boots or item == Hover_Boots or item == Hookshot or item == Longshot or item == Silver_Gauntlets or item == Golden_Gauntlets or item == Goron_Tunic or item == Zora_Tunic or item == Scarecrow or item == Distant_Scarecrow or item == Mirror_Shield",
     "_is_child_item(item)": "item == Slingshot or item == Boomerang or item == Kokiri_Sword or item == Sticks or item == Deku_Shield",
@@ -125,6 +125,9 @@
     "can_isg": "can_shield and (is_adult or Sticks or Kokiri_Sword or can_use(Megaton_Hammer))",
     "can_enemy_hover": "can_isg and glitch_hover",
     "can_hover": "has_explosives and can_enemy_hover",
+    "child_can_hover": "Deku_Shield and (Sticks or Kokiri_Sword or (Megaton_Hammer and child_can_equipswap)) and
+        has_explosives and glitch_hover",
+    "adult_can_hover": "(Hylian_Shield or Mirror_Shield) and has_explosives and glitch_hover",
     # Make sure to specify WHICH item you're expecting a weirdshot with.
     # Logically requires being adult as child crashes often while weirdshotting/weirdclipping
     "can_weirdshot": "is_adult and (has_explosives and can_shield and glitch_weirdshot)",
@@ -132,6 +135,8 @@
     "can_oi": "(Fish or Bugs) and glitch_oi",
     "can_groundjump": "can_shield and Bombs",
     "can_equipswap": "(Dins_Fire or (is_child and Sticks)) and glitch_equipswap",
+    "child_can_equipswap": "(Dins_Fire or Sticks) and glitch_equipswap",
+    "adult_can_equipswap": "Dins_Fire and glitch_equipswap",
     "can_bomb_slide": "has_explosives and can_shield and glitch_slide",
     "can_wess": "can_jumpslash and glitch_slide",
     # This can also be done with a ledge, but that's better to define on-location rather than with a helper.
@@ -140,12 +145,17 @@
     "can_ledge_cancel": "glitch_ledge_cancel and can_shield and Bombs",
     "can_ledge_cancel_chus": "glitch_ledge_cancel and can_shield and has_explosives",
     "can_damage_boost": "not_a_glitch_damage_boost and has_explosives and can_jumpslash and (can_live_dmg(0.5) or can_use(Nayrus_Love))",
+    "can_ib_dive": "can_isg and can_use(Iron_Boots) and has_cutscene_item",
     # Blue Fire works for this, but requiring 200 rupees every time for any glitch involving cutscene items is simply too cruel.
     # Beans, big poes, both letters, and weird egg are all also cutscene items, but they can all be used up so they can't be in logic.
     # I can't seem to add small poes or any kind of potion because it needs to be defined still. I've left it out for now but it could potentially be done.
     "has_cutscene_item": "(has_adult_trade_item and (is_adult or (glitch_equipswap and Dins_Fire))) or
         can_use(Dins_Fire) or can_use(Farores_Wind) or can_use(Nayrus_Love) or Ocarina or has_bottle_item",
     "has_bottle_item": "(Bugs or Fish or Fairy or Milk) and Bottle",
+    "bombchus_are_repeatable": "has_bombchus or (bombchus_in_logic and
+        ((not shuffle_interior_entrances and not shuffle_overworld_entrances and shopsanity == 'off') or
+        at('Market Bombchu Bowling', True)))",
+    "explosives_are_repeatable": "Bombs or bombchus_are_repeatable",
     
     # Bridge Requirements
     "has_all_stones": "Kokiri_Emerald and Goron_Ruby and Zora_Sapphire",

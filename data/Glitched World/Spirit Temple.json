@@ -1,157 +1,486 @@
 [
+    # Many regions in Spirit Temple are split between unknown- and known-age variants.
+    # Location rules in unknown-age regions check that either both ages have the necessary
+    # items or one age is at the known-age variant with the necessary items.
+
+    # There are some ways to reach the central chamber that are possible to lose access
+    # to:
+    # A. In-logic methods out of logic using consumable bombchus, consumable bottle
+    #    items, or a losable shield
+    # B. An inherently unrepeatable method using in-logic or togglable glitches
+    #     * Use hoverboots to climb the 1st silver block, hover to the shortcut, and
+    #       ground clip to reach the door
+    # C. Glitches that are never in logic
+    #     * Token delay hookshot jump to reach the hands.
+    #     * Action swap ground jump from a hover to climb the 1st silver block
+    # D. A very hard method that is never in logic using consumable bombchus or a losable
+    #    shield
+    #     * Hovering from OoB floor in the lobby to the shortcut
+    # E. Unrepeatable access to the temple or Colossus
+
+    # This logic is designed to prevent softlocks from A. If you lose the bombchus,
+    # bottle item, or shield you initially use to reach a locked door, you may be
+    # expected to return by using the same toggleable glitches with different items.
+    # With the protections for A, softlocks from E should be rare and only possible in
+    # ER.
+
+    # Any number of keys can be required to get to the regions blocked by locked doors.
+    # The requirements for one-key access include a choice between Mirror Shield to lower
+    # the top elevator and longshot weirdshot to clip through it.
     {
         "region_name": "Spirit Temple Lobby",
         "dungeon": "Spirit Temple",
+        "events": {
+            # Checks that you can return to any locked door you open that blocks Central
+            # Chamber. If this is the Child Spirit door, you will blocked by the
+            # explosive requirement at Child Climb.
+
+            # Logical access to one door + the Any Door Is Repeatable event
+            # is enough for logical age-unknown access to Child Climb. Can also have age-
+            # unknown access without checking for this event with logical access to
+            # multiple doors and enough keys to unlock one. Age-unknown access is omitted
+            # in exit rules when the requirements are the same as age-known, such as
+            # anything requiring all 5 keys.
+            "Any Door Is Repeatable": "(is_child or 'A at Door C1' or
+                (explosives_are_repeatable and (Hylian_Shield or Mirror_Shield) and can_live_dmg(1.5))) and
+
+                (Silver_Gauntlets or (glitch_strength2_blocks and Hover_Boots) or has_first_person_item or
+                (Bombs and can_live_dmg(0.5)) or (explosives_are_repeatable and (Hylian_Shield or Mirror_Shield))) and
+
+                'Spirit Hover Is Repeatable'",
+            # The Adult Spirit Hover Is Repeatable event is defined at Colossus
+            "Spirit Hover Is Repeatable": "'Adult Spirit Hover Is Repeatable' or 'C at Door C2' or
+                (Deku_Shield and (Sticks or Kokiri_Sword or (Megaton_Hammer and child_can_equipswap)) and
+                (Hylian_Shield or Mirror_Shield) and bombchus_are_repeatable)"
+        },
         "exits": {
             "Desert Colossus From Spirit Lobby": "True",
-            "Early Child Spirit Temple": "is_child or can_mega or Hover_Boots or (glitch_spirit_crawlspace and has_first_person_item)",
-            "Early Adult Spirit Temple": "can_use(Silver_Gauntlets) or
-                (glitch_strength2_blocks and (can_use(Hover_Boots) or (is_adult and can_bomb_slide))) or
-                (is_adult and has_first_person_item)",
-            "Spirit Temple Central Chamber": "is_adult and spirit_temple_shortcuts"
+            # Clip with a weirdclip, armos hess, bomb push, or TSC
+            "Early Child Spirit Temple": "is_child or (glitch_weirdshot and can_mega) or
+                (glitch_slide and can_shield and can_use(Hover_Boots)) or
+                (Bombs and (can_shield or can_live_dmg(0.5)) and (Hover_Boots or can_mega)) or
+                (glitch_spirit_crawlspace and has_first_person_item)",
+            "Early Adult Spirit Temple": "is_adult and (Silver_Gauntlets or
+                (glitch_strength2_blocks and (Hover_Boots or can_bomb_slide)) or
+                (Bombs and (can_shield or can_live_dmg(0.5))) or
+                has_first_person_item)",
+            # Age-known access by presence at combinations of locked doors. Access via
+            # the lower doors individually is handled at their own regions. Access solely
+            # via the hands is at Silver Gauntlets Hand Known. Age-unknown access by
+            # combinations is at Early Child Spirit Temple. Each locked door required is
+            # listed explicitly, even if it could be implied by other requirements.
+            "Spirit Temple Central Chamber Known": "is_adult and (spirit_temple_shortcuts or
+                ((Small_Key_Spirit_Temple, 4) and
+                    (('A at Door A1' and 'A at Door C2') or
+                    ('A at Door C2' and 'A Access via Top'))) or
+                (Small_Key_Spirit_Temple, 3) and
+                    'A at Door A1' and 'A at Door C2' and 'A Access via Top')",
+            "Child Spirit Temple Climb Known": "
+                ((Small_Key_Spirit_Temple, 4) and
+                    is_adult and
+                        'A at Door C1' and 'A at Door A1') or
+                ((Small_Key_Spirit_Temple, 3) and
+                    ((is_child and
+                        'C at Door C1' and 'C at Door C2' and 'C at Door A2') or
+                    (is_adult and
+                        (('A at Door C1' and 'A at Door C2' and 'A at Door A2') or
+                        ('A at Door C1' and 'A at Door C2' and 'A Access via Top') or
+                        ('A at Door A1' and 'A at Door C2' and 'A at Door A2') or
+                        ('A at Door A1' and 'A at Door C2' and 'A Access via Top'))))) or
+                ((Small_Key_Spirit_Temple, 2) and
+                    ((is_child and
+                        'C at Door C1' and 'C at Door C2' and 'C at Door A2' and 'C Access via Top') or
+                    (is_adult and
+                        'A at Door C1' and 'A at Door A1' and 'Adult Spirit Hover Is Repeatable'))) or
+                ((Small_Key_Spirit_Temple, 1) and
+                    is_adult and
+                        (('A at Door C1' and 'A at Door A1' and 'Adult Spirit Hover Is Repeatable' and ((Mirror_Shield and has_explosives) or (can_weirdshot and Longshot))) or
+                        ('A at Door C1' and 'A at Door C2' and 'A at Door A2' and 'A Access via Top')))"
         }
     },
-    # UPDATE: I've done what I can for the logic, but I simply can't parse the key logic well enough to tell if there's softlocks.
-    # Softlock potential will need to be evaluated either by someone better at this nonsense than me, or by playtesting.
-    # 2.0's going to go through a few months of beta testing before I PR it anyway, so we have time to catch any bugs.+
     {
         "region_name": "Early Child Spirit Temple",
         "dungeon": "Spirit Temple",
+        "events": {
+            "C at Door C1": "is_child",
+            "A at Door C1": "
+                is_adult and
+                    ((can_weirdshot and Longshot) or
+                    (glitch_actor and Hookshot and
+                        ((can_shield and Hover_Boots and can_live_dmg(1.0)) or
+                        (has_explosives and can_live_dmg(1.5)))))"
+        },
         "locations": {
-            "Spirit Temple Child Bridge Chest": "(can_use(Boomerang) or can_use(Slingshot) or can_use(Bow) or has_bombchus or can_mega or can_use(Hover_Boots)) and
-                (can_use(Sticks) or can_use(Megaton_Hammer) or is_adult or has_explosives or
-                    ( (Nuts or can_use(Boomerang)) and (can_use(Kokiri_Sword) or can_use(Slingshot)) ) )",
-            "Spirit Temple Child Early Torches Chest": "(is_adult and has_fire_source) or
-                (has_fire_source_with_torch and (here(is_adult) or
-                (
-                (can_use(Boomerang) or can_use(Slingshot) or has_bombchus or can_mega) and
-                (Sticks or has_explosives or
-                    ( (Nuts or can_use(Boomerang)) and
-                        (can_use(Kokiri_Sword) or can_use(Slingshot)) ) ))))",
-            "Spirit Temple GS Metal Fence": "is_adult or
-                (
-                (can_use(Boomerang) or can_use(Slingshot) or has_bombchus or can_mega) and
-                (Sticks or has_explosives or
-                    ( (Nuts or can_use(Boomerang)) and
-                        (can_use(Kokiri_Sword) or can_use(Slingshot)) ) ))",
-            "Nut Crate": "True"
+            # Duplicated in Child Spirit Temple Climb Known with alternate requirements
+            "Nut Crate": "
+                is_child or
+                (glitch_actor and Hookshot and
+                    ((can_shield and Hover_Boots and can_live_dmg(1.0)) or
+                    (has_explosives and can_live_dmg(1.5))))"
         },
         "exits": {
-            "Child Spirit Temple Climb": "(Small_Key_Spirit_Temple, 2) and
-                (is_child or (can_weirdshot and can_use(Longshot)) or can_use(Hover_Boots))"
+            # Can hookshot the fence and climb the upright bridge to clip through the ceiling
+            "Child Spirit Temple Across Bridges": "
+                here(
+                    is_adult or Sticks or has_explosives or can_use(Megaton_Hammer) or
+                    (Nuts and (can_use(Kokiri_Sword) or can_use(Slingshot)) )) and
+                here(
+                    can_use(Boomerang) or can_use(Slingshot) or can_use(Bow) or can_use(Hookshot) or has_bombchus or
+                    can_mega or can_use(Hover_Boots))",
+            "Child Spirit Temple Climb Known": "(Small_Key_Spirit_Temple, 5) and
+                (is_child or 'A at Door C1')",
+            "Child Spirit Temple Climb Unknown": "(is_child or 'A at Door C1') and
+                (((Small_Key_Spirit_Temple, 4) and
+                    ('A at Door A1' or 'A at Door C2')) or
+                ((Small_Key_Spirit_Temple, 3) and
+                    (('A at Door C2' and 'A at Door A2') or
+                    ('A at Door C2' and 'A Access via Top'))) or
+                ('Any Door Is Repeatable' and
+                    ((Small_Key_Spirit_Temple, 2) or
+                    ((Small_Key_Spirit_Temple, 1) and
+                        (('Adult Spirit Hover Is Repeatable' and
+                            ((Mirror_Shield and has_explosives) or (glitch_weirdshot and has_explosives and Longshot))) or
+                        spirit_temple_shortcuts)))))",
+            "Spirit Temple Adult Central Chamber Unknown": "
+                ((is_child and
+                    ((glitch_spirit_statue and (can_jumpslash or can_use(Megaton_Hammer))) or can_hover)) or
+                'A at Door C1') and
+
+                has_explosives and
+
+                (((Small_Key_Spirit_Temple, 4) and 'A at Door A1') or
+                ('Any Door Is Repeatable' and
+                    ((Small_Key_Spirit_Temple, 2) or
+                    ((Small_Key_Spirit_Temple, 1) and not spirit_temple_shortcuts and
+                        'Adult Spirit Hover Is Repeatable' and
+                        (Mirror_Shield or (glitch_weirdshot and Longshot))))))"
         }
     },
     {
-        "region_name": "Child Spirit Temple Climb",
+        "region_name": "Child Spirit Temple Across Bridges",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Child Climb North Chest": "at('Spirit Temple Central Chamber', True)
-                or is_child or has_projectile(adult)",
-            "Spirit Temple Child Climb East Chest": "at('Spirit Temple Central Chamber', True)
-                or is_child or has_projectile(adult)",
-            "Spirit Temple GS Sun on Floor Room": "can_use(Boomerang) or can_use(Hookshot) or
-                (can_child_damage and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love))) or 
-                (is_adult and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love)))"
-        },
-        "exits": {
-            "Spirit Temple Central Chamber": "has_explosives"
+            "Spirit Temple Child Bridge Chest": "True",
+            "Spirit Temple Child Early Torches Chest": "has_fire_source_with_torch or (glitch_qpa and can_isg)",
+            "Spirit Temple GS Metal Fence": "True"
         }
     },
     {
         "region_name": "Early Adult Spirit Temple",
         "dungeon": "Spirit Temple",
+        "events": {
+            "A at Door A1": "is_adult"
+        },
         "locations": {
             "Spirit Temple Compass Chest": "can_play(Zeldas_Lullaby) and
-                (can_use(Hookshot) or can_hover) and has_projectile(either)",
-            "Spirit Temple Early Adult Right Chest": "has_projectile(either)",
-            "Spirit Temple First Mirror Left Chest": "(Small_Key_Spirit_Temple, 2)",
-            "Spirit Temple First Mirror Right Chest": "(Small_Key_Spirit_Temple, 2)",
-            "Spirit Temple GS Boulder Room": "has_projectile(either) and
-                (can_play(Song_of_Time) or can_use(Hover_Boots))"
+                (can_use(Hookshot) or can_use(Hover_Boots) or can_hover)",
+            # Both ages can jumpslash the silver rupee without a damage boost.
+            # Child is already expected to jumpslash to get to adult side.
+            "Spirit Temple Early Adult Right Chest": "can_use_projectile",
+            # Clip to the room behind it to hookshot it
+            "Spirit Temple GS Boulder Room": "can_use_projectile and
+                (can_play(Song_of_Time) or can_use(Hookshot) or can_use(Boomerang))"
         },
         "exits": {
-            "Spirit Temple Central Chamber": "(Small_Key_Spirit_Temple, 2)"
+            "Spirit Temple Adult Central Chamber Known": "(Small_Key_Spirit_Temple, 5)",
+            "Child Spirit Temple Climb Unknown": "'Any Door Is Repeatable' and
+                ((Small_Key_Spirit_Temple, 2) or
+                ((Small_Key_Spirit_Temple, 1) and
+                    'Adult Spirit Hover Is Repeatable' and ((Mirror_Shield and has_explosives) or (can_weirdshot and Longshot))))",
+            "Spirit Temple Central Chamber Unknown": "'Any Door Is Repeatable' and explosives_are_repeatable and
+                ((Small_Key_Spirit_Temple, 3) or
+                ((Small_Key_Spirit_Temple, 2) and
+                    'Adult Spirit Hover Is Repeatable' and ((Mirror_Shield and has_explosives) or (can_weirdshot and Longshot))))",
+            "Spirit Temple Adult Central Chamber Unknown": "
+                'Any Door Is Repeatable' and explosives_are_repeatable and
+                (Sticks or Kokiri_Sword or (child_can_equipswap and Megaton_Hammer)) and
+                (glitch_spirit_statue or Deku_Shield) and
+
+                ((Small_Key_Spirit_Temple, 3) or
+                ((Small_Key_Spirit_Temple, 2) and
+                    'Adult Spirit Hover Is Repeatable' and ((Mirror_Shield and has_explosives) or (can_weirdshot and Longshot))))"
         }
     },
     {
-        "region_name": "Spirit Temple Central Chamber",
+        "region_name": "Child Spirit Temple Climb Known",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Map Chest": "can_use(Bow) or has_fire_source_with_torch",
-            "Spirit Temple Sun Block Room Chest": "has_fire_source_with_torch or can_use(Bow)",
-            "Spirit Temple Statue Room Hand Chest": "can_play(Zeldas_Lullaby)
-                and can_jumpslash",
-            "Spirit Temple Statue Room Northeast Chest": "can_play(Zeldas_Lullaby) and can_jumpslash and
-                (can_use(Hookshot) or can_use(Hover_Boots) or can_mega)",
-            "Spirit Temple GS Hall After Sun Block Room": "can_use(Hookshot) or can_use(Boomerang) or can_hover",
-            "Spirit Temple GS Lobby": "can_use(Hookshot) or can_use(Boomerang) or can_hover
-                or can_use(Hover_Boots)"
+            "Nut Crate": "(Small_Key_Spirit_Temple, 5)"
         },
         "exits": {
-            "Silver Gauntlets Hand": "True",
-            # access via Early Adult Spirit Temple requires 2 keys (+ jumpslash + explosives)
-            # access to Early Adult Spirit Temple guaranteed via can_jumpslash from here
-            "Spirit Temple Beyond Central Locked Door": "can_jumpslash and has_explosives and
-                ((Small_Key_Spirit_Temple, 2) or can_hover or can_use(Hookshot))",
-            "Child Spirit Temple Climb": "True",
-            "Spirit Temple Boss Door": "can_use(Hookshot) and can_live_dmg(0.5) and Mirror_Shield and has_explosives and glitch_bk_skip_spirit",
-            "Early Adult Spirit Temple": "can_jumpslash or can_hover or can_use(Hookshot)"
+            "Child Spirit Temple Climb Unknown": "True",
+            "Early Child Spirit Temple": "(Small_Key_Spirit_Temple, 5) and can_weirdshot and can_use(Hookshot)",
+            "Spirit Temple Central Chamber Known": "has_explosives"
         }
     },
     {
-        "region_name": "Mirror Shield Hand",
+        "region_name": "Child Spirit Temple Climb Unknown",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Mirror Shield Chest": "True"
+            "Spirit Temple Child Climb North Chest": "has_projectile(both) or
+                at('Child Spirit Temple Climb Known', can_use_projectile)",
+            "Spirit Temple Child Climb East Chest": "has_projectile(both) or
+                at('Child Spirit Temple Climb Known', can_use_projectile)",
+            # Use projectiles or Din's or jumpslash it (take fall damage) or hover off of it
+            # or hit it with an Iron Boots ISG dive (use something other than ocarina for the cutscene item)
+            "Spirit Temple GS Sun on Floor Room": "
+                can_use(Dins_Fire) or
+                ((Sticks or Kokiri_Sword) and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love))) or
+
+                ((
+                    has_projectile(child) or
+                    (glitch_hover and Deku_Shield and
+                        (Sticks or Kokiri_Sword or (child_can_equipswap and Megaton_Hammer)))) and
+                (
+                    has_projectile(adult) or can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love) or
+                    ((Hylian_Shield or Mirror_Shield) and (
+                        glitch_hover or
+                        (Iron_Boots and
+                            (has_adult_trade_item or can_use(Farores_Wind) or has_bottle_item)))))) or
+
+                at('Child Spirit Temple Climb Known', can_use_projectile or
+                    (is_adult and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love))) or can_enemy_hover or
+                    (can_ib_dive and (has_adult_trade_item or can_use(Farores_Wind) or has_bottle_item)))"
         },
         "exits": {
+            "Spirit Temple Central Chamber Unknown": "has_explosives"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Central Chamber Known",
+        "dungeon": "Spirit Temple",
+        "exits": {
+            "Spirit Temple Central Chamber Unknown": "True",
+            "Spirit Temple Adult Central Chamber Known": "
+                can_use(Hookshot) or can_use(Hover_Boots) or can_hover or
+                (glitch_spirit_statue and
+                    ((is_adult and has_explosives and can_live_dmg(0.5)) or
+                    (is_child and (can_jumpslash or can_use(Megaton_Hammer)))))",
+            # Ground clip into and out of the Knuckle room
+            "Silver Gauntlets Hand Known": "
+                (Small_Key_Spirit_Temple, 5) or
+                ((Small_Key_Spirit_Temple, 4) and
+                    has_explosives and
+                    (can_use(Hookshot) or (can_bomb_slide and can_use(Hover_Boots)) or can_hover)) or
+                ((Small_Key_Spirit_Temple, 3) and
+                    'Adult Spirit Hover Is Repeatable' and is_adult and has_explosives and
+                    (can_use(Hookshot) or (can_bomb_slide and can_use(Hover_Boots)) or can_hover)) or
+                (can_hover and (can_live_dmg(0.5) or glitch_insane))"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Central Chamber Unknown",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Spirit Temple Map Chest": "can_use(Dins_Fire) or
+                (glitch_qpa and (Kokiri_Sword or (child_can_equipswap and Megaton_Hammer))) or
+                ((Bow or glitch_qpa or adult_can_equipswap) and Sticks) or
+                at('Spirit Temple Central Chamber Known',
+                can_use(Bow) or can_use(Sticks) or (glitch_qpa and is_adult))",
+            "Spirit Temple Sun Block Room Chest": "can_use(Dins_Fire) or
+                ((Sticks or (glitch_qpa and (Kokiri_Sword or (child_can_equipswap and Megaton_Hammer)) and Deku_Shield)) and
+                (Bow or (adult_can_equipswap and Sticks) or (glitch_qpa and (Hylian_Shield or Mirror_Shield)))) or
+                at('Spirit Temple Central Chamber Known', can_use(Bow) or can_use(Sticks) or (glitch_qpa and can_isg))",
+            "Spirit Temple GS Hall After Sun Block Room": "(adult_can_equipswap and Boomerang) or
+                ((Boomerang or child_can_hover) and (Hookshot or adult_can_hover)) or
+                at('Spirit Temple Central Chamber Known', can_use(Hookshot) or can_use(Boomerang) or can_hover)",
+            "Spirit Temple GS Lobby": "Boomerang or (glitch_megaflip and has_explosives and Deku_Shield) or
+                at('Spirit Temple Central Chamber Known', is_adult)"
+        },
+        "exits": {
+            "Spirit Temple Adult Central Chamber Unknown": "
+                (child_can_hover or
+                (glitch_spirit_statue and
+                    (Kokiri_Sword or Sticks or (child_can_equipswap and Megaton_Hammer)))) and
+
+                (Hookshot or Hover_Boots or adult_can_hover or
+                (glitch_spirit_statue and has_explosives and can_live_dmg(0.5)) or
+                not spirit_temple_shortcuts)",
+            "Child Spirit Temple Climb Unknown": "True",
+            "Silver Gauntlets Hand Unknown": "
+                ((Small_Key_Spirit_Temple, 4) and
+                    child_can_hover and (adult_can_hover or Hookshot)) or
+                ((Small_Key_Spirit_Temple, 3) and
+                    'Spirit Hover Is Repeatable' and child_can_hover and (adult_can_hover or Hookshot)) or
+                (child_can_hover and adult_can_hover and (can_live_dmg(0.5) or glitch_insane))"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Adult Central Chamber Known",
+        "dungeon": "Spirit Temple",
+        "exits": {
+            "Spirit Temple Adult Central Chamber Unknown": "True",
+            "Spirit Temple Central Chamber Known": "True",
+            "Spirit Temple Before Mirror Shield Known": "has_explosives and
+                ((Small_Key_Spirit_Temple, 5) or
+                ((Small_Key_Spirit_Temple, 4) and
+                    (can_hover or (is_adult and can_shield))) or
+                ((Small_Key_Spirit_Temple, 3) and
+                    'Adult Spirit Hover Is Repeatable' and is_adult and
+                    (can_hover or (can_shield and Hover_Boots and (Megaton_Hammer or can_bomb_slide)))))",
+            "Spirit Temple Top": "(Small_Key_Spirit_Temple, 5)",
+            "Early Adult Spirit Temple": "(Small_Key_Spirit_Temple, 5)",
+            "Spirit Temple Before Boss": "glitch_spirit_statue or (spirit_temple_shortcuts and can_use(Hookshot))",
+            "Desert Colossus": "(Small_Key_Spirit_Temple, 4) and has_explosives"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Adult Central Chamber Unknown",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Spirit Temple First Mirror Left Chest": "True",
+            "Spirit Temple First Mirror Right Chest": "True",
+            "Spirit Temple Statue Room Hand Chest": "can_play(Zeldas_Lullaby)",
+            "Spirit Temple Statue Room Northeast Chest": "can_play(Zeldas_Lullaby) and
+                ((glitch_megaflip and has_explosives and Deku_Shield) or
+                at('Spirit Temple Adult Central Chamber Known', is_adult))"
+        },
+        "exits": {
+            "Spirit Temple Central Chamber Unknown": "True",
+            "Spirit Temple Before Mirror Shield Unknown": "
+                ((Small_Key_Spirit_Temple, 4) and
+                    has_explosives and
+                    Deku_Shield and (Sticks or Kokiri_Sword or (Megaton_Hammer and child_can_equipswap)) and
+                    (Hylian_Shield or Mirror_Shield)) or
+                ((Small_Key_Spirit_Temple, 3) and
+                    'Spirit Hover Is Repeatable' and child_can_hover and adult_can_hover)"
+        }
+    },
+    {
+        "region_name": "Silver Gauntlets Hand Known",
+        "dungeon": "Spirit Temple",
+        "events": {
+            "C at Door C2": "is_child",
+            "A at Door C2": "is_adult"
+        },
+        "exits": {
+            "Silver Gauntlets Hand Unknown": "True",
             "Desert Colossus": "True",
             "Spirit Temple Lobby": "True",
-            "Silver Gauntlets Hand": "
-                can_hover or can_use(Hookshot) or (can_use(Hover_Boots) and can_mega)",
-            "Spirit Temple Beyond Central Locked Door": "True"
+            "Mirror Shield Hand Known": "can_hover or
+                (can_use(Hover_Boots) and can_shield and (can_bomb_slide or Megaton_Hammer)) or
+                (can_use(Hookshot) and at('Mirror Shield Hand Unknown', True))",
+            # Assumed access to either hand if coming from Colossus
+            "Spirit Temple Central Chamber Known": "is_adult and
+                ((Small_Key_Spirit_Temple, 5) or
+                ((Small_Key_Spirit_Temple, 4) and (has_explosives or 'A Access via Top')) or
+                ((Small_Key_Spirit_Temple, 3) and has_explosives and 'A Access via Top'))",
+            "Child Spirit Temple Climb Unknown": "'Any Door Is Repeatable' and
+                ((Small_Key_Spirit_Temple, 2) or
+                ((Small_Key_Spirit_Temple, 1) and 'A Access via Top'))",
+            "Spirit Temple Central Chamber Unknown": "(can_use(Hookshot) or can_hover) and
+                'Any Door Is Repeatable' and explosives_are_repeatable and
+
+                ((Small_Key_Spirit_Temple, 3) or
+                ((Small_Key_Spirit_Temple, 2) and 'A Access via Top'))",
+            "Spirit Temple Adult Central Chamber Unknown": "(can_use(Hookshot) or can_hover) and
+                'Any Door Is Repeatable' and explosives_are_repeatable and
+                (Sticks or Kokiri_Sword or (child_can_equipswap and Megaton_Hammer)) and
+                (glitch_spirit_statue or Deku_Shield) and
+
+                ((Small_Key_Spirit_Temple, 3) or
+                ((Small_Key_Spirit_Temple, 2) and 'A Access via Top'))"
         }
     },
     {
-        "region_name": "Silver Gauntlets Hand",
+        "region_name": "Silver Gauntlets Hand Unknown",
         "dungeon": "Spirit Temple",
         "locations": {
             "Spirit Temple Silver Gauntlets Chest": "True"
         },
         "exits": {
-            "Desert Colossus": "True",
-            "Spirit Temple Lobby": "True",
-            "Mirror Shield Hand": "can_hover or (can_use(Hover_Boots) and can_mega)",
-            "Spirit Temple Central Chamber": "(Small_Key_Spirit_Temple, 2)"
+            "Mirror Shield Hand Unknown": "child_can_hover and adult_can_hover"
         }
     },
     {
-        "region_name": "Spirit Temple Beyond Central Locked Door",
+        "region_name": "Mirror Shield Hand Known",
+        "dungeon": "Spirit Temple",
+        "exits": {
+            "Mirror Shield Hand Unknown": "True",
+            "Desert Colossus": "True",
+            "Spirit Temple Lobby": "True",
+            "Silver Gauntlets Hand Known": "can_hover or can_use(Hookshot) or (can_use(Hover_Boots) and can_bomb_slide)",
+            "Spirit Temple Before Mirror Shield Known": "True"
+        }
+    },
+    {
+        "region_name": "Mirror Shield Hand Unknown",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Near Four Armos Chest": "can_use(Mirror_Shield)",
+            "Spirit Temple Mirror Shield Chest": "True"
+        },
+        "exits": {
+            "Silver Gauntlets Hand Unknown": "child_can_hover and (adult_can_hover or Hookshot)",
+            "Spirit Temple Before Mirror Shield Unknown": "True"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Before Mirror Shield Known",
+        "dungeon": "Spirit Temple",
+        "events": {
+            # Child already has explosives if coming from Colossus
+            "C at Door A2": "is_child",
+            "A at Door A2": "is_adult and has_explosives",
+            "C Access via Top": "is_child and (here(can_use(Mirror_Shield) and has_explosives) or spirit_temple_shortcuts)",
+            # When weirdshotting, use a jumpslash recoil to land on the floor
+            # instead of the statue so you don't take fall damage.
+            "A Access via Top": "(can_use(Mirror_Shield) and has_explosives) or (can_weirdshot and can_use(Longshot))"
+        },
+        "locations": {
+            "Spirit Temple Near Four Armos Chest": "can_use(Mirror_Shield)"
+        },
+        "exits": {
+            "Spirit Temple Top": "(Small_Key_Spirit_Temple, 5)",
+            "Mirror Shield Hand Known": "True"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Before Mirror Shield Unknown",
+        "dungeon": "Spirit Temple",
+        "locations": {
             "Spirit Temple Hallway Right Invisible Chest": "True",
             "Spirit Temple Hallway Left Invisible Chest": "True"
         },
         "exits": {
-            "Spirit Temple Beyond Final Locked Door": "(Small_Key_Spirit_Temple,5) and
-                (can_use(Hookshot) or has_explosives)",
-            "Mirror Shield Hand": "True",
-            "Spirit Temple Central Chamber": "has_explosives"
+            "Mirror Shield Hand Unknown": "True"
         }
     },
     {
-        "region_name": "Spirit Temple Beyond Final Locked Door",
+        "region_name": "Spirit Temple Top",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Boss Key Chest": "
-                can_play(Zeldas_Lullaby) and (can_live_dmg(1.0) or (Bow and 
-                Progressive_Hookshot))",
+            # With roll invincibility, you can open the flaming chest and not
+            # take damage until after you receive the item. Out of kindness,
+            # that's not in logic in OHKO without a way to avoid the game over.
+            # Out of cruelty however, you can be expected to spawn the platform
+            # as child and hookshot to it as adult.
+            "Spirit Temple Boss Key Chest": "can_play(Zeldas_Lullaby) and
+                (can_live_dmg(0.25) or Fairy or
+                (can_use(Hookshot) and
+                    (can_use(Nayrus_Love) or
+                    here(can_use(Bow) or can_use(Slingshot) or can_qpa or (glitch_qpa and can_isg)))) or
+                can_hover)",
             "Spirit Temple Topmost Chest": "can_use(Mirror_Shield)"
         },
         "exits": {
-            "Spirit Temple Boss Door": "can_use(Mirror_Shield) and Boss_Key_Spirit_Temple",
-            "Spirit Temple Central Chamber": "can_use(Mirror_Shield) or can_use(Hookshot)"
+            "Spirit Temple Before Boss": "(here(can_use(Mirror_Shield) and has_explosives) or spirit_temple_shortcuts) and
+                (can_use(Hookshot) or can_hover)"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Before Boss",
+        "dungeon": "Spirit Temple",
+        "exits": {
+            "Spirit Temple Boss Door": "
+                Boss_Key_Spirit_Temple or
+                (glitch_bk_skip_spirit and
+                    ((glitch_spirit_statue and can_use(Hover_Boots)) or
+                    (can_hover and
+                        ((can_live_dmg(0.5) and shuffle_bosses == 'off') or
+                        (has_bombchus and
+                            ((is_adult and has_2h_sword) or
+                            can_use(Sticks) or can_use(Megaton_Hammer))))) or
+                    (can_mega and can_use(Iron_Boots))))"
         }
     }
 ]

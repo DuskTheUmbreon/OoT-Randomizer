@@ -233,23 +233,27 @@ logic_glitches = {
                     the glitch incorrectly.
                     '''},
     # UPDATE: Update this tooltip to include ledge QPA
-     'Quick Putaway': {
+    'Glitched Damage': {
         'name'    : 'glitch_qpa',
         'tags'    : ("General",),
         'tooltip' : '''\
-                    By holding a stick, then pressing A to put it away and
-                    using a cutscene item (Adult trade items, bottled items,
-                    or ocarina) or nuts a frame later, then performing broken
-                    stick (Note that you will NOT actually activate broken
-                    stick if QPA is performed correctly!) your crouch stabs
-                    (as well as the initial jummpslash) will gain numerous
-                    different damage types.
-                    
-                    The three damage values that are logically useful are
-                    din's fire, ice arrow, and slingshot.
-                    
-                    For this to be in logic for adult, Equip Swap must also
-                    be in logic.
+                    Jumpslashing with nothing in hand deals numerous different
+                    damage types, and the damage is stored for power
+                    crouchstabs. This is possible by empty jumpslash or by Deku
+                    Stick quick putaway (QPA). The three damage values that are
+                    logically useful are Din's Fire, Ice Arrows, and Slingshot.
+
+                    To do empty jumpslash, walk slowly and press A to put away
+                    your weapon 2 frames before falling from Hover Boots or a
+                    ledge. Then jumpslash with that weapon on the frame before
+                    falling.
+
+                    By holding a stick, then pressing A to put it away and using
+                    a cutscene item (Adult trade items, bottled items, or
+                    ocarina) or nuts a frame later, you will get the QPA state.
+                    With QPA a jumpslash that would otherwise activate broken
+                    stick will instead deal glitched damage as the stick gets
+                    put away instantly.
                     '''},
     'Door of Time skip': {
         'name'    : 'glitch_dot_skip',
@@ -545,7 +549,10 @@ logic_glitches = {
         'name'    : 'glitch_bk_skip_spirit',
         'tags'    : ("BK Skip", "Spirit Temple",),
         'tooltip' : '''\
-                    UPDATE: Add description here
+                    You can ground clip through the boss door. You can also clip
+                    into the statue's head and run to the load with Hover Boots,
+                    which is only in logic when this is combined with Spirit
+                    Temple Statue Slide and Statue Climb.
                     
                     Applies to both vanilla and MQ.
                     '''},
@@ -571,16 +578,23 @@ logic_glitches = {
                     instead of the object exploding on its own, the
                     chu blows the object up.
                     '''},
-    # UPDATE: Add description for EPG
     'Actor Glitch and EPG': {
         'name'    : 'glitch_actor',
         'tags'    : ("General",),
         'tooltip' : '''\
-                    By exiting a crawlspace and opening a door before
-                    the camera has returned to normal, you can load
-                    the next room while remaining in the current room,
-                    allowing you to bypass some actors, such as the
-                    water in BotW.
+                    Actor glitch: By exiting a crawlspace and opening a knobbed
+                    door before the camera has returned to normal, you can load
+                    the next room while remaining in the current room, allowing
+                    you to bypass some actors, such as the water in BotW.
+
+                    Entrance point glitch: By opening a sliding door while
+                    moving away from it at high speed, you can walk through the
+                    door but not go far enough from it for it to shut. Then you
+                    can move to set the position and angle you will respawn from
+                    if you void. When you respawn, you will walk forward from
+                    that point, even through walls. If you clip back into the
+                    previous room while the door is open, the previous room will
+                    remain loaded with some actors missing.
                     '''},
     'Bosses Without Usual Items': {
         'name'    : 'glitch_hard_bosses',
@@ -645,6 +659,31 @@ logic_glitches = {
                         With precise movement, you can then reach
                         the lower level of child spirit as adult.
                         '''},
+    'Enter Spirit Temple via Hands': {
+        'name'    : 'glitch_spirit_hands',
+        'tags'    : ("Desert Colossus", "Spirit Temple", "Dungeon Entry",),
+        'tooltip' : '''\
+                    Use hovering, a hammer recoil hoverboost from the bean, or a
+                    Hover Boots superslide from the arch to reach the overhang
+                    between the hands and then hookshot the Silver Gauntlets
+                    chest. Without Hookshot hover directly from the arch to
+                    either hand.
+
+                    All Uses Enabled adds Bombchu hovering directly to either
+                    hand without using the bean.
+                    '''},
+    'Spirit Temple Statue Slide and Statue Climb': {
+        'name'    : 'glitch_spirit_statue',
+        'tags'    : ("Spirit Temple",),
+        'tooltip' : '''\
+                    Statue slide (aka crazy dance): crossing from the child side
+                    of Spirit Temple's central chamber to the adult side by
+                    sliding along the snake on the statue's neck. Adult needs a
+                    damage boost or damage clip. Child only needs a jumpslash.
+
+                    Statue climb and head clip: Use precise jumps and
+                    jumpslashes to reach the boss door from the adult side.
+                    '''},
 }
 
 logic_tricks = {
