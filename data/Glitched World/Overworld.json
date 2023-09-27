@@ -651,7 +651,7 @@
         },
         "exits": {
             "Wasteland Near Colossus": "True",
-            "Colossus Great Fairy Fountain": "has_explosives or (can_use(Hookshot) and can_use(Hover_Boots))",
+            "Colossus Great Fairy Fountain": "has_explosives or (can_use(Hookshot) and can_use(Hover_Boots) and glitch_hookshot_jump)",
             "Spirit Temple Lobby": "True",
             # This weirdclip is hard because sand is sand and leevers are a mistake.
             "Colossus Grotto": "can_use(Silver_Gauntlets) or (can_weirdclip and glitch_insane) or (can_ledge_cancel and is_child)",
