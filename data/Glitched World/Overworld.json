@@ -987,9 +987,7 @@
             "Cojiro Access": "is_adult and 'Wake Up Adult Talon'",
             "Kakariko Village Gate Open": "is_child and (Zeldas_Letter or open_kakariko == 'open')",
             "Killed Watchtower Skull": "at_night and 
-                is_child and (Slingshot or has_bombchus or can_isg or
-                    ((Sticks or Kokiri_Sword) and
-                    (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love))))",
+                is_child and (Slingshot or has_bombchus or can_isg or Sticks or Kokiri_Sword)",
             "Broken Sword Access": "is_child and can_equipswap and ('Poachers Saw Access' or Poachers_Saw)"
         },
         "locations": {
