@@ -717,7 +717,7 @@
             "Market Shooting Gallery": "is_child",
             "Market Bombchu Bowling": "is_child",
             "Market Potion Shop": "is_child and (at_day or Kokiri_Sword)",
-            "Market Treasure Chest Game": "is_child and (at_night or (Kokiri_Sword and glitch_treasure_day))"
+            "Market Treasure Chest Game": "is_child and (at_night or glitch_treasure_day)"
         }
     },
     {
